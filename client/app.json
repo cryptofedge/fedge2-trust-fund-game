@@ -27,7 +27,16 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiBaseUrl": "http://localhost:5000"
+      "apiBaseUrl": "http://localhost:5000",
+      "eas": {
+        "projectId": "3a13172b-e64b-4a1d-b308-84586f61e8bc"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/3a13172b-e64b-4a1d-b308-84586f61e8bc"
     }
   }
 }
