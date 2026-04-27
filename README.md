@@ -93,4 +93,4 @@ Pull requests welcome. Open an issue first to discuss major changes.
 
 ## License
 
-MIT — build your empire.
+FEDGE 2.O Eclat Universe — Rafael Fellito Rodriguez Jr.

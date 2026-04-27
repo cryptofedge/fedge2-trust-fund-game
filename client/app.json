@@ -1,7 +1,7 @@
 {
   "expo": {
     "newArchEnabled": false,
-    "name": "FEDGE 2.O",
+    "name": "FEDGE 2.O Eclat Universe",
     "slug": "fedge2-trust-fund-game",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -32,11 +32,12 @@
         "projectId": "3a13172b-e64b-4a1d-b308-84586f61e8bc"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/3a13172b-e64b-4a1d-b308-84586f61e8bc"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
