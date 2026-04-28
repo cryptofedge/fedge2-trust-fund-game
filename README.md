@@ -185,6 +185,10 @@ For licensing, partnerships, or usage permissions:
 
 ---
 
+**Learn more:** [Full License](LICENSE)
+
+---
+
 ---
 
 ## License & Brand
