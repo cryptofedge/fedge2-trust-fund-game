@@ -1,4 +1,4 @@
-﻿# FEDGE 2.O — Trust Fund Game 🏦
+﻿﻿# FEDGE 2.O — Trust Fund Game 🏦
 
 A mobile strategy game where players manage a virtual trust fund, make high-stakes financial decisions, navigate real-world events, and compete to grow their wealth empire.
 
