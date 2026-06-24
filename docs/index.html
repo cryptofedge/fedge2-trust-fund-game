@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#0a0a1a"/>
+<title>FEDGE Trust Fund</title>
+<script src="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700;800;900&display=swap');
+:root{
+  --bg:#0a0a1a;--card:#12121f;--surface:#1a1a2e;--border:#2a2a4a;
+  --gold:#f59e0b;--green:#10b981;--red:#ef4444;--blue:#3b82f6;
+  --purple:#7c3aed;--text:#f0f0ff;--text2:#8080b0;
+  --g1:linear-gradient(135deg,#7c3aed,#4f46e5);
+  --g2:linear-gradient(135deg,#f59e0b,#d97706);
+  --g3:linear-gradient(135deg,#10b981,#059669);
+  --safe:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow:hidden;}
+#app{max-width:430px;margin:0 auto;height:100%;position:relative;}
+.screen{display:none;flex-direction:column;height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+.screen.active{display:flex;}
+
+/* SPLASH */
+#splash{align-items:center;justify-content:center;padding:40px 24px;text-align:center;position:relative;}
+.splash-canvas-wrap{position:relative;width:160px;height:160px;margin:0 auto 24px;}
+.splash-canvas-wrap canvas{position:absolute;inset:-20px;width:200px;height:200px;pointer-events:none;}
+.splash-coin-emoji{position:relative;z-index:1;font-size:72px;line-height:160px;display:block;}
+.splash-tag{font-size:10px;font-weight:700;letter-spacing:3px;color:var(--gold);margin-bottom:10px;}
+.splash-title{font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;letter-spacing:2px;margin-bottom:6px;}
+.splash-sub{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:36px;max-width:300px;}
+.btn{width:100%;padding:16px;border-radius:16px;border:none;cursor:pointer;font-size:15px;font-weight:900;letter-spacing:1px;transition:transform .1s;font-family:'Inter',sans-serif;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--g1);color:#fff;}
+.btn-gold{background:var(--g2);color:#000;}
+.btn-outline{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.btn+.btn{margin-top:10px;}
+
+/* CREATION */
+#creation{padding:24px;}
+.create-header{padding:20px 0 24px;text-align:center;}
+.screen-title{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;margin-bottom:6px;}
+.screen-sub{font-size:13px;color:var(--text2);}
+.field{margin-bottom:20px;}
+.label{font-size:11px;font-weight:800;color:var(--text2);letter-spacing:1px;margin-bottom:8px;display:block;}
+input[type=text]{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--text);font-size:16px;outline:none;font-family:'Inter',sans-serif;}
+input[type=text]:focus{border-color:var(--purple);}
+.style-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.style-card{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px 12px;cursor:pointer;text-align:center;transition:all .2s;}
+.style-card.sel{border-color:var(--gold);background:rgba(245,158,11,.1);}
+.style-icon{font-size:28px;margin-bottom:6px;}
+.style-name{font-size:12px;font-weight:800;color:var(--text);margin-bottom:2px;}
+.style-desc{font-size:10px;color:var(--text2);}
+
+/* HUD */
+.hud{background:var(--card);border-bottom:1px solid var(--border);padding:14px 16px;flex-shrink:0;}
+.hud-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.hud-name{font-size:13px;font-weight:800;}
+.hud-turn{font-size:11px;color:var(--text2);}
+.hud-nw{font-size:20px;font-weight:900;color:var(--gold);}
+.hud-change{font-size:12px;font-weight:700;margin-top:2px;}
+.hud-bar-wrap{background:var(--surface);border-radius:4px;height:4px;overflow:hidden;margin-top:8px;}
+.hud-bar{height:100%;background:var(--g2);border-radius:4px;transition:width .5s;}
+.hud-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin-top:12px;}
+.hud-stat{background:var(--card);padding:10px;text-align:center;}
+.hud-stat-val{font-size:13px;font-weight:900;}
+.hud-stat-lbl{font-size:9px;color:var(--text2);margin-top:2px;letter-spacing:.5px;}
+
+/* GAME SCROLL */
+.game-scroll{flex:1;overflow-y:auto;padding:16px;}
+.section-title{font-size:11px;font-weight:900;color:var(--text2);letter-spacing:1.5px;margin-bottom:12px;}
+.portfolio-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px;}
+.asset-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--surface);}
+.asset-row:last-child{border-bottom:none;}
+.asset-left{display:flex;align-items:center;gap:10px;}
+.asset-icon{font-size:20px;width:28px;}
+.asset-name{font-size:13px;font-weight:700;}
+.asset-type{font-size:10px;color:var(--text2);}
+.asset-val{text-align:right;}
+.asset-amount{font-size:13px;font-weight:800;}
+.asset-chg{font-size:10px;font-weight:700;margin-top:2px;}
+.chart-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px;}
+.chart-section canvas{display:block;width:100%;border-radius:10px;}
+.event-card{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.3);border-radius:16px;padding:18px;margin-bottom:16px;text-align:center;}
+.event-icon{font-size:40px;margin-bottom:8px;}
+.event-title{font-size:16px;font-weight:900;margin-bottom:6px;}
+.event-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px;}
+.decision-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.decision-btn{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px 16px;cursor:pointer;text-align:left;transition:all .2s;width:100%;}
+.decision-btn:active{transform:scale(.98);}
+.decision-btn.bull{border-color:var(--green);}
+.decision-btn.hold{border-color:var(--blue);}
+.decision-btn.bear{border-color:var(--red);}
+.decision-btn.smart{border-color:var(--gold);}
+.d-label{font-size:10px;font-weight:800;letter-spacing:1px;margin-bottom:4px;}
+.d-title{font-size:14px;font-weight:900;margin-bottom:4px;}
+.d-desc{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:6px;}
+.d-impact{font-size:11px;font-weight:800;}
+.action-row{display:flex;gap:10px;margin-bottom:24px;padding-bottom:var(--safe);}
+.action-row .btn{flex:1;}
+
+/* RESULT / END */
+#results{align-items:center;padding:24px;}
+.result-hero{width:100%;background:var(--g1);border-radius:24px;padding:36px 24px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden;}
+.result-emoji{font-size:56px;margin-bottom:12px;}
+.result-title{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;letter-spacing:1px;margin-bottom:6px;}
+.result-sub{font-size:13px;color:rgba(255,255,255,.7);}
+.result-nw{font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;color:var(--gold);margin:12px 0 4px;}
+.result-grade{font-size:15px;font-weight:800;color:rgba(255,255,255,.8);}
+.result-card{width:100%;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:14px;}
+.stat-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--surface);}
+.stat-row:last-child{border-bottom:none;}
+.stat-lbl{font-size:12px;color:var(--text2);}
+.stat-val{font-size:13px;font-weight:800;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 20px;font-size:13px;font-weight:700;z-index:500;opacity:0;transition:opacity .3s;white-space:nowrap;pointer-events:none;}
+.toast.show{opacity:1;}
+
+/* PHASER OVERLAY */
+#phaserWrap{display:none;position:fixed;inset:0;z-index:9999;background:#0a0a0f;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- SPLASH -->
+<div id="splash" class="screen active">
+  <canvas id="three-bg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.4;z-index:0;"></canvas>
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;width:100%;">
+    <div class="splash-canvas-wrap">
+      <canvas id="three-coin"></canvas>
+      <span class="splash-coin-emoji">💰</span>
+    </div>
+    <p class="splash-tag">FEDGE 2.O · ECLAT UNIVERSE</p>
+    <h1 class="splash-title">TRUST FUND<br>TYCOON</h1>
+    <p class="splash-sub">You just inherited $100K. Invest smart, survive market events, and grow your dynasty — or lose it all.</p>
+    <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px;">
+      <button class="btn btn-primary" onclick="showScreen('creation')">▶ START YOUR LEGACY</button>
+      <button class="btn btn-outline" onclick="launchMarketDash()" style="border-color:rgba(245,158,11,.5);color:var(--gold);">📈 Market Dash — Phaser Warm-Up</button>
+    </div>
+    <p style="font-size:10px;color:var(--text2);margin-top:20px;">10 investment rounds · Real market events · Build generational wealth</p>
+  </div>
+</div>
+
+<!-- CREATION -->
+<div id="creation" class="screen">
+  <div class="create-header">
+    <div class="splash-tag" style="margin-bottom:8px;">STEP 1 OF 1</div>
+    <div class="screen-title">Create Your Investor</div>
+    <div class="screen-sub">Your $100K trust fund is waiting.</div>
+  </div>
+  <div class="field">
+    <label class="label">YOUR NAME</label>
+    <input type="text" id="player-name" placeholder="Enter your name…" maxlength="20" onkeydown="if(event.key==='Enter'){event.target.blur();startGame();}"/>
+  </div>
+  <div class="field">
+    <label class="label">INVESTMENT STYLE</label>
+    <div class="style-grid">
+      <div class="style-card sel" id="style-aggressive" onclick="selectStyle('aggressive',this)">
+        <div class="style-icon">🚀</div>
+        <div class="style-name">Aggressive</div>
+        <div class="style-desc">High risk, high reward</div>
+      </div>
+      <div class="style-card" id="style-balanced" onclick="selectStyle('balanced',this)">
+        <div class="style-icon">⚖️</div>
+        <div class="style-name">Balanced</div>
+        <div class="style-desc">Mix of growth & safety</div>
+      </div>
+      <div class="style-card" id="style-conservative" onclick="selectStyle('conservative',this)">
+        <div class="style-icon">🛡️</div>
+        <div class="style-name">Conservative</div>
+        <div class="style-desc">Protect the principal</div>
+      </div>
+      <div class="style-card" id="style-crypto" onclick="selectStyle('crypto',this)">
+        <div class="style-icon">₿</div>
+        <div class="style-name">Crypto Degen</div>
+        <div class="style-desc">Moon or rekt, no in-between</div>
+      </div>
+    </div>
+  </div>
+  <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:14px;padding:14px;margin-bottom:24px;">
+    <div style="font-size:11px;font-weight:800;color:var(--gold);margin-bottom:6px;">💡 HOW IT WORKS</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.6;">Each round a market event hits. Choose how to play it. Your portfolio grows or shrinks based on your decisions and market conditions. 10 rounds to build the biggest legacy.</div>
+  </div>
+  <button class="btn btn-primary" onclick="startGame()">BEGIN INVESTING →</button>
+  <button class="btn btn-outline" style="margin-top:10px;" onclick="showScreen('splash')">← Back</button>
+  <div style="height:40px;"></div>
+</div>
+
+<!-- GAME -->
+<div id="game" class="screen">
+  <div class="hud">
+    <div class="hud-top">
+      <div>
+        <div class="hud-name" id="hud-name">Player</div>
+        <div class="hud-turn" id="hud-turn">Round 1 of 10</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="hud-nw" id="hud-nw">$100K</div>
+        <div class="hud-change" id="hud-change" style="color:var(--text2);">Starting</div>
+      </div>
+    </div>
+    <div class="hud-bar-wrap"><div class="hud-bar" id="hud-bar" style="width:10%;"></div></div>
+    <div class="hud-stats">
+      <div class="hud-stat"><div class="hud-stat-val" id="hud-cash">$100K</div><div class="hud-stat-lbl">CASH</div></div>
+      <div class="hud-stat"><div class="hud-stat-val" id="hud-invested" style="color:var(--blue);">$0</div><div class="hud-stat-lbl">INVESTED</div></div>
+      <div class="hud-stat"><div class="hud-stat-val" id="hud-gains" style="color:var(--green);">+$0</div><div class="hud-stat-lbl">GAINS</div></div>
+    </div>
+  </div>
+  <div class="game-scroll">
+    <div class="chart-section" style="padding-bottom:8px;">
+      <div class="section-title">📊 PORTFOLIO 3D VIEW</div>
+      <canvas id="three-portfolio" style="height:160px;"></canvas>
+    </div>
+    <div id="event-section"></div>
+    <div id="decision-section"></div>
+    <div class="action-row">
+      <button class="btn btn-outline" onclick="launchMarketDash()" style="border-color:rgba(245,158,11,.4);color:var(--gold);font-size:12px;">📈 Market Dash</button>
+      <button class="btn btn-primary" id="next-btn" onclick="nextRound()" style="display:none;">NEXT ROUND →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results" class="screen">
+  <div class="result-hero">
+    <div class="result-emoji" id="res-emoji">🏆</div>
+    <div class="result-title" id="res-title">DYNASTY BUILT!</div>
+    <div class="result-sub" id="res-sub">10 rounds complete</div>
+    <div class="result-nw" id="res-nw">$0</div>
+    <div class="result-grade" id="res-grade">IBC Master</div>
+  </div>
+  <div class="result-card">
+    <div class="section-title">FINAL BREAKDOWN</div>
+    <div id="res-breakdown"></div>
+  </div>
+  <div class="result-card">
+    <div class="section-title">CAREER STATS</div>
+    <div id="res-stats"></div>
+  </div>
+  <button class="btn btn-gold" onclick="showScreen('creation')">🔄 New Dynasty</button>
+  <button class="btn btn-outline" style="margin-top:10px;" onclick="showScreen('splash')">← Home</button>
+  <div style="height:40px;"></div>
+</div>
+
+</div><!-- #app -->
+
+<div class="toast" id="toast"></div>
+<div id="phaserWrap"></div>
+
+<script>
+// ── UTILS ───────────────────────────────────────────────
+function fmt(n){
+  if(Math.abs(n)>=1e6) return '$'+(n/1e6).toFixed(2)+'M';
+  if(Math.abs(n)>=1e3) return '$'+(Math.round(n/100)*100/1000).toFixed(0)+'K';
+  return '$'+Math.round(n).toLocaleString();
+}
+function fmtFull(n){ return (n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString(); }
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='game') setTimeout(init3DPortfolio,60);
+}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ── GAME STATE ───────────────────────────────────────────
+const INITIAL = 100000;
+const MAX_ROUNDS = 10;
+const STYLES = {
+  aggressive:{bonus:0.15, risk:0.20, label:'🚀 Aggressive', startAlloc:{stocks:0.7,bonds:0.1,real_estate:0.1,crypto:0.05,cash:0.05}},
+  balanced:  {bonus:0.08, risk:0.10, label:'⚖️ Balanced',   startAlloc:{stocks:0.4,bonds:0.25,real_estate:0.2,crypto:0.05,cash:0.10}},
+  conservative:{bonus:0.04,risk:0.05,label:'🛡️ Conservative',startAlloc:{stocks:0.2,bonds:0.45,real_estate:0.15,crypto:0,cash:0.20}},
+  crypto:    {bonus:0.30, risk:0.40, label:'₿ Crypto',      startAlloc:{stocks:0.15,bonds:0,real_estate:0.05,crypto:0.75,cash:0.05}},
+};
+const ASSETS = [
+  {id:'stocks',   icon:'📈', name:'S&P 500 ETF',     type:'EQUITY'},
+  {id:'bonds',    icon:'📋', name:'Treasury Bonds',   type:'FIXED INCOME'},
+  {id:'real_estate',icon:'🏢',name:'REIT Index',      type:'REAL ESTATE'},
+  {id:'crypto',   icon:'₿',  name:'Crypto Basket',    type:'DIGITAL ASSET'},
+  {id:'cash',     icon:'💵', name:'Money Market',     type:'LIQUID'},
+];
+const EVENTS = [
+  {id:'bull',emoji:'🚀',title:'Bull Market Rally',type:'OPPORTUNITY',desc:'Tech stocks surge +22% — momentum is real. Smart money is rotating in.',
+   decisions:[
+     {id:'load_up',label:'BULL MOVE',cls:'bull',title:'Load Up on Stocks',desc:'Shift 40% into equities. Ride the momentum.',
+      effect:{stocks:+0.22,bonds:-0.02,real_estate:+0.05,crypto:+0.15,cash:-0.02},xp:150},
+     {id:'hold',label:'HOLD',cls:'hold',title:'Hold Current Positions',desc:'Let your existing allocations capture gains.',
+      effect:{stocks:+0.12,bonds:+0.02,real_estate:+0.04,crypto:+0.08,cash:+0.02},xp:80},
+     {id:'take_profit',label:'SMART',cls:'smart',title:'Take Partial Profits',desc:'Sell 25% at peak, redeploy into undervalued sectors.',
+      effect:{stocks:+0.08,bonds:+0.04,real_estate:+0.08,crypto:+0.06,cash:+0.04},xp:200},
+   ]},
+  {id:'crash',emoji:'📉',title:'Market Correction',type:'EMERGENCY',desc:'Recession fears hit. The S&P drops -18% in 3 weeks. Panic selling everywhere.',
+   decisions:[
+     {id:'buy_dip',label:'BULL MOVE',cls:'bull',title:'Buy the Dip',desc:'Average down aggressively. High conviction play.',
+      effect:{stocks:-0.05,bonds:+0.05,real_estate:-0.03,crypto:-0.20,cash:-0.05},xp:200},
+     {id:'hedge',label:'HOLD',cls:'hold',title:'Rotate to Safety',desc:'Move into bonds and cash. Preserve capital.',
+      effect:{stocks:-0.15,bonds:+0.08,real_estate:-0.05,crypto:-0.30,cash:+0.05},xp:120},
+     {id:'all_cash',label:'BEAR MOVE',cls:'bear',title:'Go All Cash',desc:'Sell everything. Sit out the storm. Miss the recovery.',
+      effect:{stocks:-0.18,bonds:-0.02,real_estate:-0.08,crypto:-0.40,cash:+0.03},xp:40},
+   ]},
+  {id:'fed_hike',emoji:'🏦',title:'Fed Rate Hike',type:'MILESTONE',desc:'Fed raises rates 75bps. Bonds tumble, banks rally, crypto bleeds.',
+   decisions:[
+     {id:'reits',label:'SMART',cls:'smart',title:'Pivot to REITs & Dividends',desc:'Higher rates hurt growth stocks but not cash-flowing assets.',
+      effect:{stocks:-0.08,bonds:-0.12,real_estate:+0.10,crypto:-0.20,cash:+0.04},xp:180},
+     {id:'bank_stocks',label:'BULL MOVE',cls:'bull',title:'Buy Financials',desc:'Banks profit on higher spreads. Financial sector play.',
+      effect:{stocks:+0.06,bonds:-0.10,real_estate:+0.02,crypto:-0.18,cash:+0.03},xp:160},
+     {id:'bonds_down',label:'BEAR MOVE',cls:'bear',title:'Short Duration Bonds',desc:'Get out of long-duration debt. Park in T-bills.',
+      effect:{stocks:-0.04,bonds:-0.15,real_estate:-0.02,crypto:-0.15,cash:+0.06},xp:90},
+   ]},
+  {id:'crypto_winter',emoji:'❄️',title:'Crypto Winter',type:'EMERGENCY',desc:'BTC drops -65% from ATH. NFTs dead. Altcoins wiped. Summer lasted 2 months.',
+   decisions:[
+     {id:'hodl',label:'HOLD',cls:'hold',title:'HODL Through the Pain',desc:'Diamond hands. Long conviction. Bear market DCA.',
+      effect:{stocks:+0.04,bonds:+0.02,real_estate:+0.02,crypto:-0.50,cash:0},xp:100},
+     {id:'exit_crypto',label:'SMART',cls:'smart',title:'Exit Crypto Entirely',desc:'Take losses, rotate to productive assets.',
+      effect:{stocks:+0.08,bonds:+0.05,real_estate:+0.06,crypto:-0.65,cash:+0.02},xp:180},
+     {id:'buy_btc',label:'BULL MOVE',cls:'bull',title:'Stack More Bitcoin',desc:'Bears are capitulating. Cycle bottom play.',
+      effect:{stocks:0,bonds:0,real_estate:0,crypto:-0.30,cash:-0.05},xp:220},
+   ]},
+  {id:'real_estate_boom',emoji:'🏠',title:'Housing Boom',type:'OPPORTUNITY',desc:'Remote work drives suburban real estate up 35%. REIT dividends surging.',
+   decisions:[
+     {id:'reit_heavy',label:'BULL MOVE',cls:'bull',title:'Max Out REIT Allocation',desc:'Shift 30% into real estate. Ride the wave.',
+      effect:{stocks:+0.04,bonds:+0.01,real_estate:+0.35,crypto:+0.05,cash:-0.01},xp:190},
+     {id:'diversify',label:'SMART',cls:'smart',title:'Balanced Real Estate Play',desc:'Add 15% to REITs while keeping diversification.',
+      effect:{stocks:+0.08,bonds:+0.02,real_estate:+0.22,crypto:+0.03,cash:+0.01},xp:170},
+     {id:'ignore',label:'HOLD',cls:'hold',title:'Stick to Current Plan',desc:'Stay disciplined. Real estate cycles end fast.',
+      effect:{stocks:+0.10,bonds:+0.03,real_estate:+0.10,crypto:+0.04,cash:+0.02},xp:80},
+   ]},
+  {id:'ai_boom',emoji:'🤖',title:'AI Tech Surge',type:'OPPORTUNITY',desc:'ChatGPT clones generate $80B in VC deals. NVIDIA up 200% YTD. AI everywhere.',
+   decisions:[
+     {id:'ai_heavy',label:'BULL MOVE',cls:'bull',title:'Concentrate in AI Stocks',desc:'All in on AI ETFs and semiconductor plays.',
+      effect:{stocks:+0.35,bonds:-0.05,real_estate:+0.02,crypto:+0.20,cash:-0.03},xp:200},
+     {id:'index',label:'SMART',cls:'smart',title:'Let Index Do the Work',desc:'S&P already heavy tech. No need to tilt more.',
+      effect:{stocks:+0.20,bonds:+0.02,real_estate:+0.04,crypto:+0.10,cash:+0.01},xp:160},
+     {id:'skeptical',label:'HOLD',cls:'hold',title:'Stay Skeptical',desc:'AI hype cycle = bubble. Protect gains.',
+      effect:{stocks:+0.08,bonds:+0.04,real_estate:+0.05,crypto:+0.04,cash:+0.02},xp:100},
+   ]},
+  {id:'inflation',emoji:'🔥',title:'Inflation Spike',type:'EMERGENCY',desc:'CPI hits 9%. Purchasing power eroding. Cash is trash. Real assets rally.',
+   decisions:[
+     {id:'real_assets',label:'SMART',cls:'smart',title:'Load Real Assets',desc:'Gold, REITs, commodities as inflation hedges.',
+      effect:{stocks:-0.05,bonds:-0.10,real_estate:+0.18,crypto:+0.12,cash:-0.08},xp:200},
+     {id:'tips',label:'HOLD',cls:'hold',title:'TIPS & Series I Bonds',desc:'Inflation-adjusted government bonds. Safe hedge.',
+      effect:{stocks:-0.02,bonds:-0.04,real_estate:+0.06,crypto:+0.05,cash:-0.03},xp:130},
+     {id:'stay_cash',label:'BEAR MOVE',cls:'bear',title:'Stay in Cash',desc:'Worst move in inflation. Purchasing power destroyed.',
+      effect:{stocks:0,bonds:0,real_estate:+0.04,crypto:0,cash:-0.09},xp:30},
+   ]},
+  {id:'dividend',emoji:'💸',title:'Dividend Season',type:'BONUS',desc:'Your dividend-paying assets distribute Q4 returns. Compounding kicks in.',
+   decisions:[
+     {id:'reinvest',label:'SMART',cls:'smart',title:'Reinvest All Dividends',desc:'DRiP into existing positions. Compound effect.',
+      effect:{stocks:+0.06,bonds:+0.04,real_estate:+0.05,crypto:+0.02,cash:+0.02},xp:200},
+     {id:'take_cash',label:'HOLD',cls:'hold',title:'Take Cash & Redeploy',desc:'Collect dividends, find new opportunities.',
+      effect:{stocks:+0.04,bonds:+0.03,real_estate:+0.04,crypto:+0.01,cash:+0.05},xp:130},
+     {id:'hedge_option',label:'BULL MOVE',cls:'bull',title:'Options Play on Dividend Stocks',desc:'Sell covered calls to boost income further.',
+      effect:{stocks:+0.10,bonds:+0.02,real_estate:+0.04,crypto:0,cash:+0.01},xp:170},
+   ]},
+  {id:'recession',emoji:'🌧️',title:'Recession Hits',type:'EMERGENCY',desc:'Two quarters of negative GDP. Unemployment at 8.5%. Companies cutting dividends.',
+   decisions:[
+     {id:'defensive',label:'SMART',cls:'smart',title:'Pivot to Defensive Stocks',desc:'Consumer staples, utilities, healthcare. Recession proof.',
+      effect:{stocks:-0.06,bonds:+0.06,real_estate:-0.08,crypto:-0.30,cash:+0.02},xp:190},
+     {id:'short',label:'BEAR MOVE',cls:'bear',title:'Short the Market',desc:'Inverse ETFs. Profit from the downturn.',
+      effect:{stocks:-0.20,bonds:+0.04,real_estate:-0.12,crypto:-0.40,cash:+0.02},xp:160},
+     {id:'sit_tight',label:'HOLD',cls:'hold',title:'Stay Invested',desc:'Recessions average 11 months. Long view wins.',
+      effect:{stocks:-0.10,bonds:+0.04,real_estate:-0.05,crypto:-0.20,cash:+0.01},xp:100},
+   ]},
+  {id:'ipo_season',emoji:'🎉',title:'Hot IPO Season',type:'BONUS',desc:'3 unicorns IPO this quarter. Your broker gives you pre-IPO access. Limited allocation.',
+   decisions:[
+     {id:'ipo_all_in',label:'BULL MOVE',cls:'bull',title:'Max IPO Allocation',desc:'Take all available shares. High pop potential.',
+      effect:{stocks:+0.25,bonds:0,real_estate:0,crypto:+0.15,cash:-0.05},xp:200},
+     {id:'ipo_small',label:'SMART',cls:'smart',title:'Small Selective IPO Bet',desc:'Take one IPO, keep rest diversified.',
+      effect:{stocks:+0.15,bonds:+0.01,real_estate:+0.02,crypto:+0.05,cash:+0.01},xp:160},
+     {id:'skip_ipo',label:'HOLD',cls:'hold',title:'Skip the Hype',desc:'Most IPOs underperform after 12 months. Pass.',
+      effect:{stocks:+0.08,bonds:+0.03,real_estate:+0.04,crypto:+0.02,cash:+0.02},xp:100},
+   ]},
+];
+
+let G = {};
+let selectedStyle = 'aggressive';
+let usedEvents = [];
+let nwHistory = [];
+
+function selectStyle(id, el){
+  selectedStyle = id;
+  document.querySelectorAll('.style-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function startGame(){
+  const name = document.getElementById('player-name').value.trim() || 'Player';
+  const style = STYLES[selectedStyle];
+  const alloc = style.startAlloc;
+  G = {
+    name, style: selectedStyle,
+    round: 0, xp: 0, smartMoves: 0,
+    portfolio: {
+      stocks:    INITIAL * alloc.stocks,
+      bonds:     INITIAL * alloc.bonds,
+      real_estate: INITIAL * alloc.real_estate,
+      crypto:    INITIAL * alloc.crypto,
+      cash:      INITIAL * alloc.cash,
+    },
+    totalGains: 0,
+    peakNW: INITIAL,
+  };
+  usedEvents = [];
+  nwHistory = [INITIAL];
+  showScreen('game');
+  renderGame();
+}
+
+function netWorth(){ return Object.values(G.portfolio).reduce((a,b)=>a+b,0); }
+function cashVal(){ return G.portfolio.cash; }
+function investedVal(){ return netWorth() - cashVal(); }
+
+function renderGame(){
+  const nw = netWorth();
+  const change = nw - INITIAL;
+  const pct = ((change/INITIAL)*100).toFixed(1);
+  document.getElementById('hud-name').textContent = G.name + ' · ' + STYLES[G.style].label;
+  document.getElementById('hud-turn').textContent = `Round ${G.round} of ${MAX_ROUNDS}`;
+  document.getElementById('hud-nw').textContent = fmt(nw);
+  document.getElementById('hud-change').textContent = (change>=0?'+':'')+fmt(change)+' ('+pct+'%)';
+  document.getElementById('hud-change').style.color = change>=0?'var(--green)':'var(--red)';
+  document.getElementById('hud-bar').style.width = Math.min(100, (G.round/MAX_ROUNDS)*100)+'%';
+  document.getElementById('hud-cash').textContent = fmt(cashVal());
+  document.getElementById('hud-invested').textContent = fmt(investedVal());
+  document.getElementById('hud-gains').textContent = (G.totalGains>=0?'+':'')+fmt(G.totalGains);
+  document.getElementById('hud-gains').style.color = G.totalGains>=0?'var(--green)':'var(--red)';
+
+  // Show current event
+  const evt = getCurrentEvent();
+  if(evt && G.round < MAX_ROUNDS){
+    const typeCol = {OPPORTUNITY:'var(--green)',EMERGENCY:'var(--red)',MILESTONE:'var(--gold)',BONUS:'var(--blue)'};
+    document.getElementById('event-section').innerHTML = `
+      <div class="event-card">
+        <div class="event-icon">${evt.emoji}</div>
+        <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:${typeCol[evt.type]||'var(--text2)'};margin-bottom:4px;">${evt.type}</div>
+        <div class="event-title">${evt.title}</div>
+        <div class="event-desc">${evt.desc}</div>
+      </div>`;
+    document.getElementById('decision-section').innerHTML = `
+      <div class="section-title">HOW DO YOU PLAY IT?</div>
+      <div class="decision-grid">
+        ${evt.decisions.map(d=>`
+          <button class="decision-btn ${d.cls}" onclick="makeDecision('${evt.id}','${d.id}')">
+            <div class="d-label" style="color:${d.cls==='bull'?'var(--green)':d.cls==='bear'?'var(--red)':d.cls==='smart'?'var(--gold)':'var(--blue)'}">${d.label}</div>
+            <div class="d-title">${d.title}</div>
+            <div class="d-desc">${d.desc}</div>
+            <div class="d-impact">${d.xp} XP</div>
+          </button>`).join('')}
+      </div>`;
+    document.getElementById('next-btn').style.display = 'none';
+  } else {
+    document.getElementById('event-section').innerHTML = '';
+    document.getElementById('decision-section').innerHTML = '';
+    document.getElementById('next-btn').style.display = 'block';
+    if(G.round >= MAX_ROUNDS) document.getElementById('next-btn').textContent = '🏆 VIEW RESULTS';
+  }
+  update3DPortfolio();
+}
+
+function getCurrentEvent(){
+  if(G.round >= MAX_ROUNDS) return null;
+  if(G._currentEvent) return G._currentEvent;
+  const avail = EVENTS.filter(e=>!usedEvents.includes(e.id));
+  const pool = avail.length ? avail : EVENTS;
+  const evt = pool[Math.floor(Math.random()*pool.length)];
+  usedEvents.push(evt.id);
+  G._currentEvent = evt;
+  return evt;
+}
+
+function makeDecision(evtId, decId){
+  const evt = EVENTS.find(e=>e.id===evtId);
+  if(!evt) return;
+  const dec = evt.decisions.find(d=>d.id===decId);
+  if(!dec) return;
+
+  const nwBefore = netWorth();
+  // Apply effects to each asset
+  Object.keys(dec.effect).forEach(asset=>{
+    const mult = dec.effect[asset];
+    if(G.portfolio[asset] !== undefined){
+      G.portfolio[asset] = Math.max(0, G.portfolio[asset] * (1 + mult));
+    }
+  });
+  // Style bonus
+  const style = STYLES[G.style];
+  Object.keys(G.portfolio).forEach(k=>{
+    if(k!=='cash') G.portfolio[k] *= (1 + (Math.random() * style.bonus - style.risk*0.3));
+  });
+
+  const nwAfter = netWorth();
+  const gained = nwAfter - nwBefore;
+  G.totalGains += gained;
+  G.xp += dec.xp;
+  if(dec.cls==='smart') G.smartMoves++;
+  if(nwAfter > G.peakNW) G.peakNW = nwAfter;
+  nwHistory.push(Math.max(0,nwAfter));
+
+  G._currentEvent = null;
+  G.round++;
+
+  toast((gained>=0?'📈 +':' 📉 ')+fmt(Math.abs(gained))+' · +'+dec.xp+' XP');
+  renderGame();
+
+  if(G.round >= MAX_ROUNDS) showResults();
+}
+
+function nextRound(){
+  if(G.round >= MAX_ROUNDS){ showResults(); return; }
+  G._currentEvent = null;
+  renderGame();
+}
+
+function showResults(){
+  const nw = netWorth();
+  const gain = nw - INITIAL;
+  const pct = ((gain/INITIAL)*100).toFixed(0);
+  const ibcPct = G.smartMoves > 0 ? Math.round(G.smartMoves/MAX_ROUNDS*100) : 0;
+  let emoji='', title='', grade='';
+  if(nw >= 500000){ emoji='👑'; title='DYNASTY BUILT!'; grade='S+ · Infinite Investor'; }
+  else if(nw >= 250000){ emoji='🔥'; title='WEALTH STACKED!'; grade='A · Elite Tycoon'; }
+  else if(nw >= 150000){ emoji='📈'; title='SOLID RETURNS!'; grade='B · Smart Investor'; }
+  else if(nw >= 100000){ emoji='🌱'; title='BROKE EVEN'; grade='C · Learning Mode'; }
+  else { emoji='😤'; title='REKT BUT WISER'; grade='D · Come Back Stronger'; }
+
+  document.getElementById('res-emoji').textContent=emoji;
+  document.getElementById('res-title').textContent=title;
+  document.getElementById('res-sub').textContent=G.name+' · '+G.round+' rounds · '+STYLES[G.style].label;
+  document.getElementById('res-nw').textContent=fmt(nw);
+  document.getElementById('res-grade').textContent=grade;
+
+  const breakdown = ASSETS.map(a=>`
+    <div class="stat-row">
+      <div class="stat-lbl">${a.icon} ${a.name}</div>
+      <div class="stat-val" style="color:${G.portfolio[a.id]>(INITIAL*STYLES[G.style].startAlloc[a.id]||0)?'var(--green)':'var(--red)'};">${fmt(G.portfolio[a.id])}</div>
+    </div>`).join('');
+  document.getElementById('res-breakdown').innerHTML = breakdown;
+
+  const stats = [
+    {lbl:'Total Gain/Loss', val:(gain>=0?'+':'')+fmt(gain)+' ('+pct+'%)', col:gain>=0?'var(--green)':'var(--red)'},
+    {lbl:'Peak Net Worth', val:fmt(G.peakNW), col:'var(--gold)'},
+    {lbl:'Smart Moves', val:G.smartMoves+' / '+MAX_ROUNDS+' ('+ibcPct+'%)', col:'var(--purple)'},
+    {lbl:'Total XP Earned', val:G.xp+' XP', col:'var(--blue)'},
+    {lbl:'Investment Style', val:STYLES[G.style].label, col:'var(--text)'},
+  ].map(s=>`<div class="stat-row"><div class="stat-lbl">${s.lbl}</div><div class="stat-val" style="color:${s.col}">${s.val}</div></div>`).join('');
+  document.getElementById('res-stats').innerHTML = stats;
+
+  showScreen('results');
+}
+
+// ── THREE.JS AMBIENT BG ──────────────────────────────────
+(function initBg(){
+  if(!window.THREE) return;
+  const canvas = document.getElementById('three-bg');
+  if(!canvas) return;
+  const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:false});
+  renderer.setPixelRatio(1);
+  const W=window.innerWidth, H=window.innerHeight;
+  renderer.setSize(W,H,false);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(60,W/H,0.1,200);
+  camera.position.z=50;
+  const pts=[];
+  for(let i=0;i<120;i++) pts.push(new THREE.Vector3((Math.random()-.5)*120,(Math.random()-.5)*120,(Math.random()-.5)*60));
+  const geo=new THREE.BufferGeometry().setFromPoints(pts);
+  scene.add(new THREE.Points(geo,new THREE.PointsMaterial({color:0xf59e0b,size:0.3,transparent:true,opacity:0.6})));
+  function animate(){
+    requestAnimationFrame(animate);
+    scene.rotation.y+=0.0003; scene.rotation.x+=0.0001;
+    renderer.render(scene,camera);
+  }
+  animate();
+})();
+
+// ── THREE.JS COIN ────────────────────────────────────────
+(function initCoin(){
+  if(!window.THREE) return;
+  const canvas=document.getElementById('three-coin');
+  if(!canvas) return;
+  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(200,200,false);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(55,1,0.1,100);
+  camera.position.z=5;
+  const coin=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,0.18,40),new THREE.MeshBasicMaterial({color:0xf59e0b,transparent:true,opacity:0.85}));
+  scene.add(coin);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(1.5,0.08,6,40),new THREE.MeshBasicMaterial({color:0xd97706,transparent:true,opacity:0.9}));
+  scene.add(rim);
+  const inner=new THREE.Mesh(new THREE.CylinderGeometry(0.8,0.8,0.25,32),new THREE.MeshBasicMaterial({color:0xfbbf24,wireframe:true,transparent:true,opacity:0.5}));
+  scene.add(inner);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(2.4,0.05,6,48),new THREE.MeshBasicMaterial({color:0x7c3aed,transparent:true,opacity:0.4}));
+  ring.rotation.x=Math.PI/2.5;
+  scene.add(ring);
+  function animate(){
+    requestAnimationFrame(animate);
+    const t=Date.now()*0.001;
+    coin.rotation.y=t*0.8; rim.rotation.y=t*0.8; inner.rotation.y=-t*0.5;
+    coin.rotation.x=Math.sin(t*0.4)*0.35;
+    rim.rotation.x=Math.sin(t*0.4)*0.35;
+    ring.rotation.z=t*0.2;
+    renderer.render(scene,camera);
+  }
+  animate();
+})();
+
+// ── THREE.JS PORTFOLIO 3D BARS ───────────────────────────
+let _portfolioRenderer=null, _portfolioScene=null, _portfolioBars=[], _portfolioCamera=null;
+function init3DPortfolio(){
+  if(!window.THREE) return;
+  const canvas=document.getElementById('three-portfolio');
+  if(!canvas||canvas._init) return;
+  canvas._init=true;
+  const W=canvas.clientWidth||350, H=160;
+  _portfolioRenderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  _portfolioRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  _portfolioRenderer.setSize(W,H,false);
+  _portfolioScene=new THREE.Scene();
+  _portfolioCamera=new THREE.PerspectiveCamera(50,W/H,0.1,100);
+  _portfolioCamera.position.set(0,3,14);
+  _portfolioCamera.lookAt(0,0,0);
+  const cols=[0x3b82f6,0xf59e0b,0x10b981,0xf97316,0x94a3b8];
+  ASSETS.forEach((a,i)=>{
+    const x=(i-2)*2.8;
+    const geo=new THREE.BoxGeometry(1.8,0.1,1.2);
+    const mat=new THREE.MeshBasicMaterial({color:cols[i],transparent:true,opacity:0.85});
+    const bar=new THREE.Mesh(geo,mat);
+    bar.position.set(x,0.05,0);
+    _portfolioScene.add(bar);
+    const wire=new THREE.Mesh(new THREE.BoxGeometry(1.8,0.1,1.2),new THREE.MeshBasicMaterial({color:cols[i],wireframe:true,transparent:true,opacity:0.4}));
+    wire.position.set(x,0.05,0);
+    _portfolioScene.add(wire);
+    _portfolioBars.push({bar,wire,assetId:a.id,baseX:x});
+  });
+  const grid=new THREE.GridHelper(16,8,0x1a1a3a,0x1a1a3a);
+  _portfolioScene.add(grid);
+  function loop(){
+    requestAnimationFrame(loop);
+    const t=Date.now()*0.001;
+    _portfolioCamera.position.x=Math.sin(t*0.2)*2;
+    _portfolioCamera.lookAt(0,2,0);
+    if(_portfolioRenderer) _portfolioRenderer.render(_portfolioScene,_portfolioCamera);
+  }
+  loop();
+}
+function update3DPortfolio(){
+  if(!_portfolioBars.length||!G.portfolio) return;
+  const total=netWorth()||1;
+  _portfolioBars.forEach(b=>{
+    const val=G.portfolio[b.assetId]||0;
+    const h=Math.max(0.1,(val/total)*8);
+    b.bar.scale.y=h;
+    b.bar.position.y=h*0.05;
+    b.wire.scale.y=h;
+    b.wire.position.y=h*0.05;
+  });
+}
+
+// ── PHASER MARKET DASH ───────────────────────────────────
+let _pGame=null;
+function _pClose(result){
+  document.getElementById('phaserWrap').style.display='none';
+  if(_pGame){_pGame.destroy(true);_pGame=null;}
+  if(window._pCb){window._pCb(result);window._pCb=null;}
+}
+function _pLaunch(SceneClass,cb){
+  const wrap=document.getElementById('phaserWrap');
+  wrap.style.display='block';
+  if(_pGame){_pGame.destroy(true);_pGame=null;}
+  window._pCb=cb;
+  _pGame=new Phaser.Game({type:Phaser.CANVAS,width:window.innerWidth,height:window.innerHeight,parent:'phaserWrap',backgroundColor:'#0a0a0f',scene:[SceneClass],scale:{mode:Phaser.Scale.RESIZE}});
+}
+
+class MarketDashScene extends Phaser.Scene {
+  constructor(){super({key:'MarketDashScene'});}
+  create(){
+    const W=this.scale.width, H=this.scale.height;
+    this.score=0; this.timeLeft=18;
+    const gains=['DIVIDEND','4.5%','BULL','COMPOUND','GROWTH','FREE CASH','10% APY'];
+    const losses=['CRASH','FEE','BANKRUPT','SCAM','LEVERAGED','MARGIN CALL','PONZI'];
+
+    this.add.text(W/2,H*0.07,'📈 MARKET DASH',{fontFamily:'Orbitron,sans-serif',fontSize:'18px',color:'#f59e0b',fontStyle:'bold'}).setOrigin(0.5);
+    this.add.text(W/2,H*0.13,'Catch GREEN gains · Dodge RED losses',{fontFamily:'Inter,sans-serif',fontSize:'12px',color:'rgba(255,255,255,0.45)'}).setOrigin(0.5);
+    this.scoreText=this.add.text(W/2,H*0.20,'+$0',{fontFamily:'Orbitron,sans-serif',fontSize:'24px',color:'#10b981',fontStyle:'bold'}).setOrigin(0.5);
+    this.timerText=this.add.text(W-14,14,'18s',{fontFamily:'Inter,sans-serif',fontSize:'14px',color:'#f59e0b'}).setOrigin(1,0);
+    this.timerBar=this.add.rectangle(20,H*0.26,W-40,6,0xf59e0b).setOrigin(0,0.5);
+
+    this.spawnTimer=this.time.addEvent({delay:750,loop:true,callback:()=>{
+      const isGain=Math.random()>0.4;
+      const label=isGain?gains[Math.floor(Math.random()*gains.length)]:losses[Math.floor(Math.random()*losses.length)];
+      const val=isGain?Math.floor(500+Math.random()*1500):-Math.floor(300+Math.random()*800);
+      const x=50+Math.random()*(W-100);
+      const pill=this.add.container(x,-35);
+      const bg=this.add.rectangle(0,0,Math.max(label.length*9+30,96),38,isGain?0x061a0a:0x1a0606,0.94).setStrokeStyle(2,isGain?0x10b981:0xef4444);
+      const txt=this.add.text(0,-4,label,{fontFamily:'Inter,sans-serif',fontSize:'11px',fontStyle:'bold',color:isGain?'#10b981':'#ef4444'}).setOrigin(0.5);
+      const sub=this.add.text(0,8,(isGain?'+$':'-$')+Math.abs(val),{fontFamily:'Inter,sans-serif',fontSize:'9px',color:isGain?'#10b981':'#ef4444'}).setOrigin(0.5);
+      pill.add([bg,txt,sub]);
+      pill.setInteractive(new Phaser.Geom.Rectangle(-60,-25,120,50),Phaser.Geom.Rectangle.Contains);
+      pill.userData={done:false};
+      pill.on('pointerdown',()=>{
+        if(pill.userData.done) return;
+        pill.userData.done=true;
+        if(isGain){
+          this.score+=val;
+          this.scoreText.setText('+$'+this.score.toLocaleString());
+          this.scoreText.setScale(1.3);
+          this.tweens.add({targets:this.scoreText,scaleX:1,scaleY:1,duration:200});
+          const pop=this.add.text(x,pill.y,'💰',{fontSize:'24px'}).setOrigin(0.5);
+          this.tweens.add({targets:pop,y:pop.y-55,alpha:0,duration:380,onComplete:()=>pop.destroy()});
+        } else {
+          this.score=Math.max(0,this.score+val);
+          this.scoreText.setText('+$'+this.score.toLocaleString());
+          this.cameras.main.shake(120,0.012);
+          const pop=this.add.text(x,pill.y,'📉',{fontSize:'20px'}).setOrigin(0.5);
+          this.tweens.add({targets:pop,y:pop.y-40,alpha:0,duration:350,onComplete:()=>pop.destroy()});
+        }
+        this.tweens.add({targets:pill,alpha:0,scaleX:1.25,scaleY:1.25,duration:180,onComplete:()=>pill.destroy()});
+      });
+      this.tweens.add({targets:pill,y:H+50,duration:4000+Math.random()*2000,ease:'Linear',onComplete:()=>{if(!pill.userData.done)pill.destroy();}});
+    }});
+
+    this.countdownTimer=this.time.addEvent({delay:1000,loop:true,callback:()=>{
+      this.timeLeft--;
+      this.timerText.setText(this.timeLeft+'s');
+      this.timerBar.width=(W-40)*(this.timeLeft/18);
+      if(this.timeLeft<=0){
+        this.spawnTimer.remove(); this.countdownTimer.remove();
+        this.add.rectangle(W/2,H/2,W-28,140,0x0a0a0f,0.97).setOrigin(0.5);
+        this.add.text(W/2,H/2-28,'💰 +$'+this.score.toLocaleString()+' EARNED!',{fontFamily:'Orbitron,sans-serif',fontSize:'19px',fontStyle:'bold',color:'#f59e0b'}).setOrigin(0.5);
+        this.add.text(W/2,H/2+10,'Market closed. Book those gains. 📊',{fontFamily:'Inter,sans-serif',fontSize:'12px',color:'rgba(255,255,255,0.5)'}).setOrigin(0.5);
+        this.time.delayedCall(2100,()=>_pClose({earned:this.score}));
+      }
+    }});
+  }
+}
+
+function launchMarketDash(){
+  _pLaunch(MarketDashScene,result=>{
+    if(result&&result.earned>0&&G.portfolio){
+      G.portfolio.cash=(G.portfolio.cash||0)+result.earned;
+      G.totalGains=(G.totalGains||0)+result.earned;
+      toast('📈 +$'+result.earned.toLocaleString()+' added to your portfolio!');
+      if(document.getElementById('game').classList.contains('active')) renderGame();
+    }
+  });
+}
+</script>
+</body>
+</html>
