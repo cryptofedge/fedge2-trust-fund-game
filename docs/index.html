@@ -248,6 +248,81 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);
 
 /* PHASER OVERLAY */
 #phaserWrap{display:none;position:fixed;inset:0;z-index:9999;background:#050510;}
+
+/* ── MARCUS NPC ── */
+.marcus-wrap{margin-bottom:14px;animation:fadeUp .4s ease both;}
+.marcus-panel{display:flex;gap:12px;align-items:flex-end;}
+.marcus-avatar-wrap{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.marcus-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#1a1a3a,#2a2a55);
+  border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;
+  font-size:24px;box-shadow:0 0 12px rgba(245,158,11,.3);}
+.marcus-name-tag{font-size:8px;font-weight:800;color:var(--gold);letter-spacing:.5px;text-align:center;}
+.marcus-bubble{background:var(--card);border:1px solid var(--border);border-radius:18px 18px 18px 4px;
+  padding:12px 15px;flex:1;position:relative;}
+.marcus-bubble::before{content:'';position:absolute;bottom:12px;left:-7px;width:0;height:0;
+  border-top:6px solid transparent;border-bottom:6px solid transparent;
+  border-right:8px solid var(--border);}
+.marcus-bubble::after{content:'';position:absolute;bottom:13px;left:-5px;width:0;height:0;
+  border-top:5px solid transparent;border-bottom:5px solid transparent;
+  border-right:7px solid var(--card);}
+.marcus-label{font-size:9px;font-weight:800;color:var(--gold);letter-spacing:1px;margin-bottom:5px;text-transform:uppercase;}
+.marcus-text{font-size:12px;color:rgba(255,255,255,.8);line-height:1.65;}
+.marcus-mood{font-size:16px;display:inline-block;margin-right:4px;}
+.scene-text{font-size:11px;color:var(--text2);line-height:1.7;font-style:italic;
+  background:rgba(255,255,255,.03);border-left:3px solid var(--gold);
+  padding:10px 14px;border-radius:0 10px 10px 0;margin-bottom:12px;}
+
+/* ── FEDGE 2.O CHATBOT ── */
+#chat-btn{position:fixed;bottom:calc(28px + var(--safe));right:18px;z-index:800;
+  width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#4f46e5);
+  border:2px solid rgba(124,58,237,.5);box-shadow:0 4px 20px rgba(124,58,237,.5);
+  font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:transform .2s;animation:glow 2s ease-in-out infinite;}
+#chat-btn:active{transform:scale(.9);}
+#chat-panel{position:fixed;inset:0;z-index:900;display:flex;flex-direction:column;
+  justify-content:flex-end;pointer-events:none;transition:all .3s;}
+#chat-panel.open{pointer-events:all;}
+#chat-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;
+  transition:opacity .3s;backdrop-filter:blur(4px);}
+#chat-panel.open #chat-backdrop{opacity:1;}
+#chat-sheet{background:var(--card);border-radius:24px 24px 0 0;border-top:1px solid var(--border);
+  max-height:78vh;display:flex;flex-direction:column;
+  transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);}
+#chat-panel.open #chat-sheet{transform:translateY(0);}
+.chat-header{display:flex;align-items:center;gap:12px;padding:16px 18px 12px;
+  border-bottom:1px solid var(--border);flex-shrink:0;}
+.chat-avatar{width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,#7c3aed,#4f46e5);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 0 10px rgba(124,58,237,.4);}
+.chat-title{flex:1;}
+.chat-title strong{display:block;font-size:14px;font-weight:900;color:var(--text);}
+.chat-title span{font-size:10px;color:var(--green);font-weight:700;letter-spacing:.5px;}
+.chat-close{font-size:20px;color:var(--text2);cursor:pointer;padding:4px;}
+#chat-messages{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-height:200px;}
+.chat-msg{max-width:85%;animation:fadeUp .2s ease;}
+.chat-msg.user{align-self:flex-end;}
+.chat-msg.bot{align-self:flex-start;}
+.chat-bubble{padding:10px 14px;border-radius:16px;font-size:12px;line-height:1.65;}
+.chat-msg.user .chat-bubble{background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border-radius:16px 16px 4px 16px;}
+.chat-msg.bot .chat-bubble{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:16px 16px 16px 4px;}
+.chat-typing{display:flex;gap:4px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:16px 16px 16px 4px;width:fit-content;}
+.chat-typing span{width:6px;height:6px;border-radius:50%;background:var(--purple);animation:pulse 1.2s ease-in-out infinite;}
+.chat-typing span:nth-child(2){animation-delay:.2s;}
+.chat-typing span:nth-child(3){animation-delay:.4s;}
+.chat-input-row{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--border);flex-shrink:0;
+  padding-bottom:calc(12px + var(--safe));}
+#chat-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:11px 14px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;}
+#chat-input:focus{border-color:var(--purple);}
+#chat-send{background:linear-gradient(135deg,#7c3aed,#4f46e5);border:none;border-radius:12px;
+  width:42px;height:42px;cursor:pointer;font-size:16px;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;}
+.chat-suggestions{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 10px;}
+.chat-suggestion{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);
+  border-radius:20px;padding:5px 12px;font-size:11px;color:var(--purple);
+  cursor:pointer;font-weight:700;transition:all .2s;white-space:nowrap;}
+.chat-suggestion:active{background:rgba(124,58,237,.25);}
 </style>
 </head>
 <body>
@@ -365,6 +440,20 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);
       </div>
     </div>
 
+    <!-- Marcus NPC dialogue -->
+    <div id="marcus-wrap" class="marcus-wrap" style="display:none;">
+      <div class="marcus-panel">
+        <div class="marcus-avatar-wrap">
+          <div class="marcus-avatar">🧑🏽‍💼</div>
+          <div class="marcus-name-tag">MARCUS</div>
+        </div>
+        <div class="marcus-bubble">
+          <div class="marcus-label" id="marcus-label">ADVISOR</div>
+          <div class="marcus-text" id="marcus-text">...</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Event + Decisions injected here -->
     <div id="event-container"></div>
 
@@ -415,6 +504,35 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);
 </div>
 
 </div><!-- #app -->
+
+<!-- FEDGE 2.O CHATBOT -->
+<button id="chat-btn" onclick="openChat()" title="Ask FEDGE 2.O">💎</button>
+<div id="chat-panel">
+  <div id="chat-backdrop" onclick="closeChat()"></div>
+  <div id="chat-sheet">
+    <div class="chat-header">
+      <div class="chat-avatar">💎</div>
+      <div class="chat-title">
+        <strong>FEDGE 2.O</strong>
+        <span>● ONLINE · Game Advisor</span>
+      </div>
+      <div class="chat-close" onclick="closeChat()">✕</div>
+    </div>
+    <div class="chat-suggestions">
+      <div class="chat-suggestion" onclick="quickAsk('How do I play?')">How do I play?</div>
+      <div class="chat-suggestion" onclick="quickAsk('Best strategy?')">Best strategy?</div>
+      <div class="chat-suggestion" onclick="quickAsk('What is Marcus?')">Who is Marcus?</div>
+      <div class="chat-suggestion" onclick="quickAsk('How does scoring work?')">Scoring?</div>
+    </div>
+    <div id="chat-messages"></div>
+    <div class="chat-input-row">
+      <input id="chat-input" type="text" placeholder="Ask FEDGE 2.O anything…"
+        onkeydown="if(event.key==='Enter')sendChat()"/>
+      <button id="chat-send" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-wrap"><div class="toast" id="toast"></div></div>
 <div id="phaserWrap"></div>
 
@@ -673,6 +791,7 @@ function renderGame(){
   if(G.round<MAX_ROUNDS){
     const evt=getOrPickEvent();
     ec.innerHTML=buildEventHTML(evt);
+    setTimeout(()=>showMarcus('pre',evt.id,null),80);
     nw_wrap.style.display='none';
   } else {
     ec.innerHTML='';
@@ -769,7 +888,8 @@ function makeDecision(evtId,decId,ev){
   const sign=delta>=0?'+':'';
   toast(`${delta>=0?'📈':'📉'} ${sign}${fmt(delta)} · +${dec.xp} XP`, delta>=0?'green':'red');
   renderGame();
-  if(G.round>=MAX_ROUNDS){ setTimeout(showResults,600); }
+  setTimeout(()=>showMarcus('react',evtId,decId),300);
+  if(G.round>=MAX_ROUNDS){ setTimeout(showResults,800); }
 }
 
 function nextRound(){
@@ -1161,6 +1281,239 @@ class MarketDashScene extends Phaser.Scene {
       }
     }});
   }
+}
+
+// ══ MARCUS WELLS — NPC ADVISOR ═══════════════════════════
+const MARCUS = {
+  bull:{
+    scene:"Bloomberg is flashing green wall to wall. The S&P just ripped through resistance and every retail trader is piling in.",
+    pre:"Kid, I've seen this movie before — '99, 2013, 2021. The question ain't IF the party ends. It's whether you're holding the bag when it does.",
+    reactions:{
+      load_up:{mood:'🔥',label:'BOLD MOVE',text:"Respect the conviction. You rode the wave like a pro. Just remember — bulls make money, bears make money, pigs get slaughtered. Know your exit before you go in."},
+      take_profit:{mood:'🎯',label:'TEXTBOOK',text:"THAT is how you do it. You captured the upside AND protected your downside. Most retail traders hold too long chasing the top. You just played it like a hedge fund."},
+      hold_bull:{mood:'😐',label:'DISCIPLINED',text:"Nothing wrong with staying the course. But you left some real money on the table today. In a bull market, being too conservative is its own kind of loss."}
+    }
+  },
+  crash:{
+    scene:"Your phone won't stop buzzing. Every notification is red. CNBC anchors look like they haven't slept. The S&P is circuit-breaking down.",
+    pre:"This is where fortunes are made or destroyed. Panic is contagious. Most people sell at exactly the wrong moment. What separates the wealthy from everyone else? What happens next.",
+    reactions:{
+      buy_dip:{mood:'💎',label:'LEGENDARY',text:"Diamond hands AND a buying opportunity — that's the Buffett play. 'Be greedy when others are fearful.' You just did that. This move alone could define your legacy."},
+      hedge:{mood:'🛡️',label:'SMART',text:"Capital preservation. That's sophisticated thinking. You live to fight another day. A lot of people just watched their net worth get cut in half. You didn't."},
+      all_cash:{mood:'😬',label:'CLASSIC MISTAKE',text:"I get it — fear is real. But you sold at the bottom. The recovery is coming and you'll be watching from the sidelines. This is the most common mistake I see. Don't do it twice."}
+    }
+  },
+  fed_hike:{
+    scene:"The Fed Chairman steps to the mic. 75 basis points. The bond market implodes instantly. Your phone shows your bond positions bleeding.",
+    pre:"Rate hikes change everything. Growth stocks get murdered, cash becomes king temporarily, and real assets hold. Most investors freeze up. Don't freeze.",
+    reactions:{
+      reits:{mood:'🏢',label:'SAVVY',text:"Cash-flowing real assets in a rate-hike cycle — exactly right. REITs with long-term leases don't care about short-term rate moves. You're thinking like an institutional investor now."},
+      financials:{mood:'🏦',label:'TACTICAL',text:"Banks printing money on wider spreads — smart sector rotation. That's the kind of move that takes years of market experience to see. You're learning fast."},
+      t_bills:{mood:'🛡️',label:'CONSERVATIVE',text:"T-bills paying real yield for the first time in years — nothing wrong with taking the free money. Safe play, but you might miss the rotation into assets that benefit from higher rates."}
+    }
+  },
+  crypto_winter:{
+    scene:"The crypto subreddits are graveyard quiet. LUNA is at zero. Three exchanges just filed for bankruptcy. Your crypto position is a ghost of what it was.",
+    pre:"This is the test. Every bull market creates believers. A bear market shows you who's actually convicted versus who just got lucky. Which one are you?",
+    reactions:{
+      hodl:{mood:'🧊',label:'CONVICTION',text:"Either that's genius or stubbornness — only time will tell. If you're right about the tech, you'll look brilliant. If you're wrong, you held a melting ice cube. Make sure you know which you own."},
+      exit_crypto:{mood:'✂️',label:'DECISIVE',text:"Taking the L and rotating into productive assets — that's mature investing. Most people hold through -90% hoping it comes back. You protected your remaining capital. Respect."},
+      stack_btc:{mood:'⚡',label:'CONTRARIAN',text:"Buying when everyone's capitulating. That's either the smartest move in this room or the craziest. Historically? The buyers at crypto bottoms have done VERY well. Time will tell."}
+    }
+  },
+  real_estate_boom:{
+    scene:"Your Zillow app shows everything in your city up 30% in 12 months. REIT dividends are hitting your account. The housing market is on fire.",
+    pre:"Real estate booms feel like they'll never end — until they do. The smart play is getting exposure without overcommitting. What's your move?",
+    reactions:{
+      max_reit:{mood:'🏠',label:'AGGRESSIVE',text:"Full REIT exposure in a housing boom. Bold. Just make sure you have an exit strategy when rates change — real estate is VERY sensitive to the cost of money."},
+      balanced_re:{mood:'⚖️',label:'BALANCED',text:"Measured real estate exposure while keeping diversification — that's the play I'd make. You get the upside without betting the whole portfolio on one sector."},
+      skip_re:{mood:'🤔',label:'DISCIPLINED',text:"Staying disciplined in FOMO markets is hard. And honestly? You might be right. Real estate cycles can reverse fast. Capital preservation has value."}
+    }
+  },
+  ai_boom:{
+    scene:"Your LinkedIn feed is nothing but AI. Every company's earnings call mentions it 50 times. NVIDIA just hit a new ATH. The buzz is deafening.",
+    pre:"I've seen tech bubbles. 1999 dot-com. 2021 crypto. Some of those companies WERE revolutionary — they just got too expensive too fast. The question is: where are we in the cycle?",
+    reactions:{
+      ai_etfs:{mood:'🤖',label:'CONCENTRATED',text:"Maximum AI exposure. If this plays out like the internet did long-term, you're going to look like a genius. If it's a bubble top, that's going to hurt. Make sure this is risk capital you can afford to lose."},
+      index_play:{mood:'📈',label:'EFFICIENT',text:"Letting the index do the heavy lifting — that's actually how most professional allocators beat retail investors over time. You don't need to pick winners if you own the whole market."},
+      skeptic:{mood:'🧠',label:'CONTRARIAN',text:"Sitting out the hype. That's either Warren Buffett level wisdom or you just missed a generational trade. History will decide. Your discipline is admirable regardless."}
+    }
+  },
+  inflation:{
+    scene:"Grocery store prices are up 20%. Gas is insane. Your rent just jumped $400. The CPI number drops and it's worse than expected — 9.1%.",
+    pre:"Inflation is a wealth tax on cash. Everything sitting in a savings account just lost 9% of its purchasing power in a year. Real assets are your only defense.",
+    reactions:{
+      real_assets:{mood:'🏆',label:'SOPHISTICATED',text:"Real assets as an inflation hedge — that's institutional-level thinking. Commodities, real estate, crypto — these all have intrinsic value that adjusts with inflation. Well played."},
+      tips_ibonds:{mood:'🛡️',label:'SMART HEDGE',text:"Government-backed inflation protection. It's not sexy but it works. I-Bonds at 9% with zero risk? That's free money. Sophisticated move for the conservative portion of your portfolio."},
+      do_nothing:{mood:'😬',label:'COSTLY MISTAKE',text:"Cash in an inflationary environment is like an ice cube in the sun. You didn't 'do nothing' — you actively chose to lose purchasing power every single day. Don't make this mistake again."}
+    }
+  },
+  dividends:{
+    scene:"Your brokerage account shows a deposit you didn't make. Dividend season hit — your positions are paying you to hold them.",
+    pre:"This is what passive income looks like. Your money is working while you sleep. Now the question is: do you spend it, or do you put it back to work?",
+    reactions:{
+      drip:{mood:'🌊',label:'COMPOUND MASTER',text:"DRiP — Dividend Reinvestment Plan. This is how generational wealth actually works. Einstein called compound interest the eighth wonder of the world. You're using it right."},
+      redeploy:{mood:'🎯',label:'ACTIVE',text:"Taking dividends as dry powder to hunt new opportunities. Solid active management. Just make sure you're redeploying into something with better risk/reward than what you already own."},
+      covered_calls:{mood:'💡',label:'ADVANCED',text:"Selling covered calls to boost income — that's an advanced strategy. You're generating yield on top of your existing position. This is how professional portfolio managers squeeze extra alpha."}
+    }
+  },
+  recession:{
+    scene:"Two negative GDP prints. Unemployment is spiking. Your friends are getting laid off. The news is pure doom. Recession is officially here.",
+    pre:"Recessions average 11 months. They end. Every single one. The question is whether you're positioned to survive and even thrive when the recovery comes.",
+    reactions:{
+      defensive:{mood:'🛡️',label:'STRATEGIC',text:"Rotating into consumer staples and healthcare — people still buy food and medicine in a recession. That's textbook defensive positioning. You're playing chess while everyone else is panicking."},
+      short_market:{mood:'⚔️',label:'AGGRESSIVE HEDGE',text:"Inverse ETFs — high risk, high reward. If you time it right, you'll make a killing. If you're early or late, you'll get destroyed by decay. Make sure you know what you own here."},
+      long_game:{mood:'🦁',label:'LONG TERM',text:"Stay invested through the recession. Historically, the investors who do this outperform everyone who tried to time the bottom. You're playing the 10-year game, not the 10-month game."}
+    }
+  },
+  ipo:{
+    scene:"Your broker sends a priority email: pre-IPO allocation available. Three unicorns going public this quarter. The hype is electric.",
+    pre:"IPOs are a casino with better lighting. The underwriters price it for THEM, not for you. But sometimes you catch lightning in a bottle. What's your move?",
+    reactions:{
+      ipo_max:{mood:'🎲',label:'HIGH ROLLER',text:"Max allocation on all three. Either you're about to make a killing or you just bought someone else's exit. Pre-IPO allocations can be amazing — or they can be the bank unloading garbage. Trust your research."},
+      ipo_selective:{mood:'🎯',label:'SELECTIVE',text:"Cherry-picking the strongest unicorn and staying diversified elsewhere — that's exactly the right approach. You get exposure to the upside without betting the whole portfolio on hype."},
+      skip_ipo:{mood:'📚',label:'DISCIPLINED',text:"'When in doubt, stay out.' 90% of IPOs underperform in their first year. You let the hype pass and stayed disciplined. That's actually really hard to do. Respect."}
+    }
+  }
+};
+
+function showMarcus(mode, evtId, decId) {
+  const data = MARCUS[evtId];
+  if (!data) return;
+  const wrap = document.getElementById('marcus-wrap');
+  const label = document.getElementById('marcus-label');
+  const text = document.getElementById('marcus-text');
+  wrap.style.display = 'block';
+  if (mode === 'pre') {
+    label.textContent = 'MARCUS SAYS';
+    text.innerHTML = `<em class="scene-text" style="display:block;margin-bottom:8px;">${data.scene}</em>"${data.pre}"`;
+  } else if (mode === 'react' && decId) {
+    const r = data.reactions[decId];
+    if (!r) return;
+    label.innerHTML = `<span class="marcus-mood">${r.mood}</span> ${r.label}`;
+    text.textContent = `"${r.text}"`;
+    wrap.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+}
+
+// Marcus wiring is injected directly into renderGame and makeDecision below
+
+// ══ FEDGE 2.O CHATBOT ENGINE ══════════════════════════════
+const F2_KB = [
+  {k:['how','play','start','begin','rules','basics'],
+   a:`Welcome to Trust Fund Tycoon! You inherit $100K and play through 10 market events. Each round a real-world event hits — like a bull rally, Fed rate hike, or crypto crash. You pick a strategy (Bull, Bear, Smart, or Hold). Your portfolio grows or shrinks based on your choice + some market randomness. Finish 10 rounds with the most net worth to build your dynasty. 💰`},
+  {k:['marcus','advisor','mentor','who is','npc','character'],
+   a:`Marcus Wells is your Wall Street advisor — 20 years on the Street, seen everything from dot-com to crypto winter. He shows up before each market event to set the scene and reacts to every decision you make. Listen to him. He drops real financial wisdom with no sugarcoating. 🧑🏽‍💼`},
+  {k:['style','aggressive','balanced','conservative','crypto','which style','best style'],
+   a:`Each style sets your starting portfolio allocation:\n\n🚀 Aggressive — 70% stocks, 10% crypto. High upside, high volatility.\n⚖️ Balanced — Mixed across all assets. Solid middle ground.\n🛡️ Conservative — 45% bonds, 20% cash. Slow and steady.\n₿ Crypto Degen — 80% crypto. Moon or rekt, no in-between.\n\nBest style? Balanced gives you the most options. Aggressive has the highest ceiling. Conservative rarely loses big.`},
+  {k:['asset','portfolio','stocks','bonds','real estate','reit','crypto','cash','money market'],
+   a:`Your portfolio has 5 asset classes:\n\n📈 S&P 500 ETF — broad market equity exposure\n📋 Treasury Bonds — fixed income, safe during crashes\n🏢 REIT Index — real estate investment trusts, dividend income\n₿ Crypto Basket — high risk digital assets\n💵 Money Market — liquid cash earning modest yield\n\nEach event affects these differently. Crypto moves the most. Bonds move the least.`},
+  {k:['smart','smart move','smart play','best decision','which choice','recommend'],
+   a:`Look for the SMART PLAY option — it has a gold glow around it. Those are the highest-XP decisions that reflect sophisticated investing strategy. They don't always give the biggest short-term gain, but they compound best over 10 rounds. When in doubt, Marcus will tell you what a pro would do. 🎯`},
+  {k:['xp','experience','level','points'],
+   a:`XP tracks how sharp your investment decisions are. Smart moves give the most XP (200+). Bold bull moves give 150-210 XP. Holding gives less. XP doesn't directly change your net worth — it's your skill score for the results screen and affects your final grade alongside net worth.`},
+  {k:['grade','score','rating','s+','rank','results'],
+   a:`Your final grade is based on net worth after 10 rounds:\n\n👑 S+ — $700K+ (Dynasty Built)\n🔥 A — $350K+ (Elite Tycoon)\n📈 B — $175K+ (Smart Investor)\n🌱 C — $100K+ (Broke Even)\n😤 D — Under $100K (Got Rekt)\n\nSmart moves (gold glow) stack XP and compound better over time. The SMART PLAY decisions tend to push you toward S+.`},
+  {k:['market dash','mini game','phaser','dash','bonus'],
+   a:`Market Dash is the Phaser 2D bonus game. Catch GREEN tokens (DIVIDEND, BULL, IBC LOAN) and dodge RED ones (CRASH, MARGIN CALL, PONZI). You have 20 seconds. Build a COMBO by catching consecutive greens — at 3-streak you get a 1.5× multiplier, at 6+ you get 2×. Every dollar you earn in Market Dash gets added to your cash position. 📈`},
+  {k:['combo','multiplier','streak'],
+   a:`In Market Dash, catching greens consecutively builds your COMBO:\n\n🔥 3+ streak = ×1.5 multiplier on each catch\n🔥🔥 6+ streak = ×2.0 multiplier\n🔥🔥🔥 9+ streak = ×3.0 multiplier\n\nOne red token kills your combo. Go for long green streaks to maximize earnings. Skip the reds even if you have to let them pass. 💎`},
+  {k:['bull','bull market','rally','stocks up'],
+   a:`Bull Market events mean stocks are ripping. Your options:\n\n🚀 Load Up — Maximum equity exposure. High reward, leaves you exposed if it tops.\n🎯 Take Partial Profits — Sell some at peak, rotate into undervalued assets. Marcus's favorite.\n😐 Hold Steady — Let existing positions ride. Safe but conservative.\n\nMarcus tip: Taking profits in a bull market is the move most people can't emotionally make. That's why smart investors outperform.`},
+  {k:['crash','market crash','down','bear','red','losing'],
+   a:`Crashes separate real investors from everyone else. Your options:\n\n💎 Buy the Dip — Average down. Highest upside, requires nerve.\n🛡️ Rotate to Safety — Move to bonds/cash. Preserve capital.\n😬 Panic Sell — Go all cash. You'll miss the recovery.\n\nHistorically, every crash has been followed by a recovery. The question is whether you have the capital and conviction to hold through it.`},
+  {k:['crypto','bitcoin','btc','crypto winter','defi'],
+   a:`Crypto events are volatile — that's the whole game with digital assets. In a Crypto Winter:\n\n🧊 HODL — You keep exposure but it keeps bleeding. Works if the cycle turns.\n✂️ Smart Exit — Cut losses, redeploy into productive assets. Usually the right call.\n⚡ Stack More — Buy the bottom. Highest risk/reward in the game.\n\nIf you're playing Crypto Degen style, your whole game depends on crypto recovery timing.`},
+  {k:['inflation','cpi','rate','fed','interest rate'],
+   a:`Inflation destroys cash. In high-inflation events:\n\n🏆 Real Assets — REITs, crypto, commodities all hedge inflation. Best move.\n🛡️ TIPS & I-Bonds — Government-backed inflation protection. Safe but slow.\n😬 Do Nothing — Worst possible move. You're actively losing purchasing power every day.\n\nMarcus puts it simply: "Inflation is a silent tax on people who don't invest."` },
+  {k:['ipo','initial public offering','unicorn','stock listing'],
+   a:`IPO events give you pre-IPO access. The options:\n\n🎲 Max Allocation — Full exposure to all 3 IPOs. High variance.\n🎯 Selective — Pick the strongest one. Best risk/reward balance.\n📚 Skip — Stay disciplined. 90% of IPOs underperform year 1.\n\nMarcus's take: "Underwriters price IPOs for themselves, not for you. Be selective or stay out."` },
+  {k:['dividend','drip','passive income','income'],
+   a:`Dividend events are free money events — your assets are paying you. Options:\n\n🌊 DRiP — Reinvest everything. Compound interest does the heavy lifting over time.\n🎯 Redeploy — Take cash, find better opportunities.\n💡 Covered Calls — Advanced options strategy to squeeze extra yield.\n\nFor building a dynasty, DRiP is almost always the right long-term answer. Compound interest is the most powerful force in investing.`},
+  {k:['tips','hint','advice','strategy','win','how to win'],
+   a:`FEDGE 2.O's top 5 tips for Trust Fund Tycoon:\n\n1. 🎯 SMART PLAY options compound best over 10 rounds\n2. 💎 In crashes, buy the dip if you have conviction\n3. 🚀 Aggressive style has the highest ceiling — but also deepest ruin\n4. 🌊 DRiP dividends every time — compounding is real\n5. 📈 Play Market Dash between rounds to add cash to your portfolio\n\nAnd always listen to Marcus. He's usually right.`},
+  {k:['fedge','fedge 2.o','eclat','who are you','what are you'],
+   a:`I'm FEDGE 2.O — your AI financial guide from Eclat Universe. I'm built to educate and entertain. I know everything about Trust Fund Tycoon: every event, every strategy, every edge. Ask me anything about investing, the game, or Marcus. I don't sugarcoat. 💎`},
+];
+
+const F2_FALLBACKS = [
+  "Real talk — I don't have a specific answer for that, but try asking about the game events, investment styles, or your strategy. I got you. 💎",
+  "Hmm, that's outside my knowledge base right now. Ask me about Marcus, the market events, scoring, or strategies and I'll break it down. 🎯",
+  "I'm focused on Trust Fund Tycoon right now. Ask me about how to play, which style to pick, or what Marcus thinks about any situation. 💰",
+];
+
+function matchChat(input) {
+  const q = input.toLowerCase();
+  for (const entry of F2_KB) {
+    if (entry.k.some(k => q.includes(k))) return entry.a;
+  }
+  return F2_FALLBACKS[Math.floor(Math.random() * F2_FALLBACKS.length)];
+}
+
+function openChat() {
+  document.getElementById('chat-panel').classList.add('open');
+  const msgs = document.getElementById('chat-messages');
+  if (!msgs.children.length) {
+    addBotMsg("What's good. I'm FEDGE 2.O — your advisor for Trust Fund Tycoon. Ask me how to play, which style fits you, what Marcus means by his advice, or any strategy question. I don't hold back. 💎");
+  }
+  setTimeout(() => document.getElementById('chat-input').focus(), 350);
+}
+
+function closeChat() {
+  document.getElementById('chat-panel').classList.remove('open');
+}
+
+function addBotMsg(text) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg bot';
+  div.innerHTML = `<div class="chat-bubble">${text.replace(/\n/g,'<br/>')}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addUserMsg(text) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg user';
+  div.innerHTML = `<div class="chat-bubble">${text}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg bot'; div.id = 'typing-indicator';
+  div.innerHTML = `<div class="chat-typing"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideTyping() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addUserMsg(q);
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    addBotMsg(matchChat(q));
+  }, 600 + Math.random() * 400);
+}
+
+function quickAsk(q) {
+  addUserMsg(q);
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    addBotMsg(matchChat(q));
+  }, 600);
 }
 
 function launchMarketDash(){
