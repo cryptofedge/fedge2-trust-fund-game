@@ -507,7 +507,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);
 </div><!-- #app -->
 
 <!-- FEDGE 2.O CHATBOT -->
-<button id="chat-btn" onclick="openChat()" title="Ask FEDGE 2.O">💎</button>
+
 <div id="chat-panel">
   <div id="chat-backdrop" onclick="closeChat()"></div>
   <div id="chat-sheet">
@@ -1559,5 +1559,7 @@ window.lbSubmit=async function(){const name=document.getElementById('lb-name-inp
 window.lbAutoSubmit=async function(name,score,scoreDisplay){if(!score)return;const entry={name:name||'Anonymous',score,scoreDisplay:scoreDisplay||String(score),date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}),game:GAME_ID,ts:Date.now()};await lbPush(entry);};
 })('trust-fund-tycoon','Net Worth', ()=>netWorth()||0, ()=>G.name||'');
 </script>
+<style id="f2-legacy-chat-off">/* Replaced by the native FEDGE chat in the app shell. */
+#chat-btn,#chat-panel{display:none!important;visibility:hidden!important;pointer-events:none!important}</style>
 </body>
 </html>
